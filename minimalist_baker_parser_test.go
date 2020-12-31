@@ -18,18 +18,25 @@ func assertErrorsEqual(t testing.TB, actual error, expected HostNameNotMinimalis
 	}
 }
 
+func expectPanic(t testing.TB) {
+	t.Helper()
+	if r := recover(); r == nil {
+		t.Errorf("The code did not panic.")
+	}
+}
+
+func assertNoError(t testing.TB, err error) {
+	t.Helper()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %v", err)
+	}
+}
+
 func TestMinimalistBakerUrlParser(t *testing.T) {
 	t.Run("Test panic if the URL isn't a valid URL.", func(t *testing.T) {
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("The code did not panic.")
-			}
-		}()
-
+		defer expectPanic(t)
 		_, err := ParseUrl("not_a_url")
-		if err != nil {
-			t.Errorf("Error was returned unexpectedly.")
-		}
+		assertNoError(t, err)
 	})
 
 	t.Run("Test parse a URL with the wrong hostname.", func(t *testing.T) {

@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+const domain = "minimalistbaker.com"
+const instructionItemSelector = "li.wprm-recipe-instruction"
+const ingredientItemSelector = "li.wprm-recipe-ingredient"
+const descriptionSelector = "div.wprm-recipe-summary"
+const titleSelector = "h2.wprm-recipe-name"
+
 type Recipe struct {
 	Title           string
 	Description     string
@@ -19,13 +25,13 @@ type Recipe struct {
 type HostNameNotMinimalistBakerError string
 
 func (h HostNameNotMinimalistBakerError) Error() string {
-	return fmt.Sprintf("Host name was not minimalistbaker.com: %q", string(h))
+	return fmt.Sprintf("Host name was not %s: %q", domain, string(h))
 }
 
 type RecipeNotFoundError string
 
 func (r RecipeNotFoundError) Error() string {
-	return fmt.Sprintf("No recipe coudl be found at URL: %q", string(r))
+	return fmt.Sprintf("No recipe could be found at URL: %q", string(r))
 }
 
 func GetRecipe(doc *goquery.Document) (Recipe, error) {
@@ -50,11 +56,11 @@ func GetRecipe(doc *goquery.Document) (Recipe, error) {
 }
 
 func GetRecipeInstructionList(doc *goquery.Document) ([]string, error) {
-	return getTextSliceOfAllElementsInSelector(doc, "li.wprm-recipe-instruction")
+	return getTextSliceOfAllElementsInSelector(doc, instructionItemSelector)
 }
 
 func GetRecipeIngredientList(doc *goquery.Document) ([]string, error) {
-	return getTextSliceOfAllElementsInSelector(doc, "li.wprm-recipe-ingredient")
+	return getTextSliceOfAllElementsInSelector(doc, ingredientItemSelector)
 }
 
 func getTextSliceOfAllElementsInSelector(doc *goquery.Document, selector string) ([]string, error) {
@@ -75,11 +81,11 @@ func getAllSelectionOfSelector(doc *goquery.Document, selector string) (*goquery
 }
 
 func GetRecipeDescription(doc *goquery.Document) (string, error) {
-	return getTextOfSelector(doc, "div.wprm-recipe-summary")
+	return getTextOfSelector(doc, descriptionSelector)
 }
 
 func GetRecipeTitle(doc *goquery.Document) (string, error) {
-	return getTextOfSelector(doc, "h2.wprm-recipe-name")
+	return getTextOfSelector(doc, titleSelector)
 }
 
 func getTextOfSelector(doc *goquery.Document, selector string) (string, error) {
@@ -135,7 +141,7 @@ func ValidUrl(rawUrl string) (bool, error) {
 }
 
 func isMinimalistBaker(hostname string) bool {
-	return hostname == "minimalistbaker.com"
+	return hostname == domain
 }
 
 func getHostName(recipeUrl *url.URL) string {
